@@ -1,8 +1,11 @@
-import pygame
 import sys
-from levels import levels, LEVEL_ORDER
-from colors import *
+
+import pygame
+
+from colors import COL_BLUE, COL_GREEN, COL_RED, COL_WHITE, COLORS, COLORS_LINE
+from levels import LEVEL_ORDER, levels
 from ui import make_buttons
+
 pygame.init()
 
 # ---------------- НАСТРОЙКИ ----------------
@@ -22,11 +25,13 @@ clock = pygame.time.Clock()
 
 # ---------------- СЕТКА ----------------
 
+
 def get_grid_offset(size):
     return (WIN_W - size * CELL) // 2, 140
 
+
 # ---------------- ЛОКАЦИИ ----------------
-scene = "menu"   # menu / level1 / level2 / end
+scene = "menu"  # menu / level1 / level2 / end
 
 # ---------------- ИГРОВАЯ ЛОГИКА ----------------
 starts = {}
@@ -36,7 +41,7 @@ dots = {}
 active_start = None
 paths = {}
 finished_paths = {}
-active_color = None 
+active_color = None
 drawing = False
 win = False
 
@@ -47,7 +52,6 @@ first_move = False
 level_name = "Level 1"
 end_timer = 0
 current_level = "level1"
-
 
 
 menu_btn2, restart_btn, next_btn = make_buttons(WIN_W)
@@ -62,12 +66,9 @@ def draw_button(rect, text):
 
     txt = small_font.render(text, True, COLORS["text"])
     screen.blit(
-        txt,
-        (
-            rect.centerx - txt.get_width() // 2,
-            rect.centery - txt.get_height() // 2
-        )
+        txt, (rect.centerx - txt.get_width() // 2, rect.centery - txt.get_height() // 2)
     )
+
 
 def load_level(name):
     global grid_x, grid_y, start_cell, end_cell
@@ -132,7 +133,7 @@ def load_level(name):
                     cross_cells[(r, c)] = COL_GREEN
                 elif color == 4:
                     cross_cells[(r, c)] = COL_BLUE
-            
+
             # точка
             elif t == 4:
                 if color == 1:
@@ -146,13 +147,13 @@ def load_level(name):
 
     # создаём пустые пути и сбор точек
     paths = {}
-    
 
     all_colors = set(starts.keys()) | set(dots.keys())
 
     for col in all_colors:
         paths[col] = []
-        
+
+
 def get_mouse_cell(pos):
     mx, my = pos
 
@@ -169,10 +170,12 @@ def get_mouse_cell(pos):
 
     return None
 
+
 def near(a, b):
     if not isinstance(a, tuple) or not isinstance(b, tuple):
         return False
     return abs(a[0] - b[0]) + abs(a[1] - b[1]) == 1
+
 
 def is_cross(color, cell):
     if cell not in cross_cells:
@@ -187,6 +190,7 @@ def is_cross(color, cell):
     # цветной блокирует только свой цвет
     return cross_color == color
 
+
 def draw_menu():
     screen.fill(COLORS["bg"])
 
@@ -196,24 +200,19 @@ def draw_menu():
     draw_button(menu_btn, "Начать игру")
     draw_button(exit_btn, "Выход")
 
+
 def draw_cell(r, c):
-        rect = pygame.Rect(
-            grid_x + c * CELL,
-            grid_y + r * CELL,
-            CELL,
-            CELL
-        )
-    
-        inner = rect.inflate(-6, -6)
-    
-        pygame.draw.rect(screen, COLORS["cell"], inner, border_radius=8)
+    rect = pygame.Rect(grid_x + c * CELL, grid_y + r * CELL, CELL, CELL)
+
+    inner = rect.inflate(-6, -6)
+
+    pygame.draw.rect(screen, COLORS["cell"], inner, border_radius=8)
+
 
 def center(cell):
     r, c = cell
-    return (
-        grid_x + c * CELL + CELL // 2,
-        grid_y + r * CELL + CELL // 2
-    )
+    return (grid_x + c * CELL + CELL // 2, grid_y + r * CELL + CELL // 2)
+
 
 def draw_level():
     screen.fill(COLORS["bg"])
@@ -227,10 +226,7 @@ def draw_level():
     msg_color = (0, 220, 0) if win else COLORS["text"]
 
     msg_txt = small_font.render(msg, True, msg_color)
-    screen.blit(
-        msg_txt,
-        (WIN_W // 2 - msg_txt.get_width() // 2, 70)
-    )
+    screen.blit(msg_txt, (WIN_W // 2 - msg_txt.get_width() // 2, 70))
 
     # ---------------- СЕТКА ----------------
     for r in range(size):
@@ -243,17 +239,14 @@ def draw_level():
             sx, sy = center(start)
 
             rect = pygame.Rect(
-                sx - MARK_SIZE // 2,
-                sy - MARK_SIZE // 2,
-                MARK_SIZE,
-                MARK_SIZE
+                sx - MARK_SIZE // 2, sy - MARK_SIZE // 2, MARK_SIZE, MARK_SIZE
             )
 
             pygame.draw.rect(
                 screen,
                 COLORS_LINE.get(color, COLORS_LINE[COL_WHITE]),
                 rect,
-                border_radius=11
+                border_radius=11,
             )
 
     # ---------------- КОНЦЫ ----------------
@@ -262,10 +255,7 @@ def draw_level():
             ex, ey = center(end)
 
             rect = pygame.Rect(
-                ex - MARK_SIZE // 2,
-                ey - MARK_SIZE // 2,
-                MARK_SIZE,
-                MARK_SIZE
+                ex - MARK_SIZE // 2, ey - MARK_SIZE // 2, MARK_SIZE, MARK_SIZE
             )
 
             pygame.draw.rect(
@@ -273,33 +263,23 @@ def draw_level():
                 COLORS_LINE.get(color, COLORS_LINE[COL_WHITE]),
                 rect,
                 5,
-                border_radius=11
+                border_radius=11,
             )
 
     # ---------------- КРЕСТИКИ ----------------
     for (r, c), cross_color in cross_cells.items():
-        rect = pygame.Rect(
-            grid_x + c * CELL,
-            grid_y + r * CELL,
-            CELL,
-            CELL
-        )
+        rect = pygame.Rect(grid_x + c * CELL, grid_y + r * CELL, CELL, CELL)
 
         inner = rect.inflate(-55, -55)
 
-        pygame.draw.rect(
-            screen,
-            COLORS["cell"],
-            inner,
-            border_radius=1
-        )
+        pygame.draw.rect(screen, COLORS["cell"], inner, border_radius=1)
 
         pygame.draw.line(
             screen,
             COLORS_LINE.get(cross_color, COLORS["white"]),
             (inner.left, inner.top),
             (inner.right, inner.bottom),
-            7
+            7,
         )
 
         pygame.draw.line(
@@ -307,9 +287,9 @@ def draw_level():
             COLORS_LINE.get(cross_color, COLORS["white"]),
             (inner.right, inner.top),
             (inner.left, inner.bottom),
-            7
+            7,
         )
-        
+
     # ---------------- ТОЧКИ ----------------
     for color, cells in dots.items():
         for r, c in cells:
@@ -317,10 +297,7 @@ def draw_level():
             cy = grid_y + r * CELL + CELL // 2
 
             pygame.draw.circle(
-                screen,
-                COLORS_LINE.get(color, COLORS["white"]),
-                (cx, cy),
-                10
+                screen, COLORS_LINE.get(color, COLORS["white"]), (cx, cy), 10
             )
 
     # ---------------- ЛИНИИ ----------------
@@ -336,7 +313,7 @@ def draw_level():
             if start_cell in start_list:
                 line_color = color
                 break
-        
+
         line_color = COLORS_LINE[line_color]
 
         for i in range(len(path) - 1):
@@ -368,13 +345,7 @@ def draw_level():
                     if i > 0:
                         y1 += half
 
-            pygame.draw.line(
-                screen,
-                line_color,
-                (x1, y1),
-                (x2, y2),
-                LINE_WIDTH
-            )
+            pygame.draw.line(screen, line_color, (x1, y1), (x2, y2), LINE_WIDTH)
 
     # ---------------- КНОПКИ ----------------
     draw_button(menu_btn2, "Меню")
@@ -387,20 +358,15 @@ def draw_level():
         draw_button(next_btn, "Далее")
     else:
         draw_button(next_btn, "Выйти")
-    
+
+
 def draw_end():
     screen.fill(COLORS["bg"])
 
-    txt = small_font.render(
-        "Окно закроется через три секунды...",
-        True,
-        COLORS["text"]
-    )
+    txt = small_font.render("Окно закроется через три секунды...", True, COLORS["text"])
 
-    screen.blit(
-        txt,
-        (WIN_W // 2 - txt.get_width() // 2, WIN_H // 2)
-    )
+    screen.blit(txt, (WIN_W // 2 - txt.get_width() // 2, WIN_H // 2))
+
 
 def occupied_by_other(active_start, cell):
 
@@ -415,15 +381,18 @@ def occupied_by_other(active_start, cell):
 
     return False
 
-pressed_kind = None   # None / "start" / "end"
+
+pressed_kind = None  # None / "start" / "end"
 pressed_cell = None
 pressed_color = None
+
 
 def clear_press():
     global pressed_kind, pressed_cell, pressed_color
     pressed_kind = None
     pressed_cell = None
     pressed_color = None
+
 
 def acceptable_end_for(color, cell):
     if cell is None:
@@ -441,11 +410,13 @@ def acceptable_end_for(color, cell):
     # 2) ИЛИ в белом (НО только если выполнены условия в
     return cell == color_end or cell == white_end
 
+
 def is_other_start(active, cell):
     for color, start in starts.items():
         if color != active and cell == start:
             return True
     return False
+
 
 def validate_move(active_start, cell, path):
     """Проверка во время движения (MOUSEMOTION)"""
@@ -469,6 +440,7 @@ def validate_move(active_start, cell, path):
         return False
 
     return True
+
 
 def validate_finish(start_cell, path):
 
@@ -577,6 +549,7 @@ def validate_finish(start_cell, path):
 
     return True
 
+
 def validate_level():
 
     # -------------------------------------------------
@@ -647,6 +620,7 @@ def validate_level():
 
     return True
 
+
 def reset_level_state():
     global starts, ends, cross_cells, dots, paths
     global drawing, active_color, win, invalid_line, finished
@@ -664,6 +638,7 @@ def reset_level_state():
     win = False
     invalid_line = False
 
+
 def reset_active_line():
     global drawing, active_start, active_color, invalid_line
 
@@ -675,6 +650,7 @@ def reset_active_line():
     active_color = None
     invalid_line = False
     clear_press()
+
 
 def erase_line(start_cell):
 
@@ -690,11 +666,13 @@ def erase_line(start_cell):
     if start_cell in finished_paths:
         del finished_paths[start_cell]
 
+
 def point_covered(cell):
     for path in paths.values():
         if cell in path:
             return True
     return False
+
 
 def all_dots_collected():
     for cells in dots.values():
@@ -702,6 +680,7 @@ def all_dots_collected():
             if not point_covered(cell):
                 return False
     return True
+
 
 def all_color_dots_collected(color):
     if color not in dots:
@@ -711,7 +690,6 @@ def all_color_dots_collected(color):
         if not point_covered(dot):
             return False
     return True
-
 
 
 # ---------------- ЦИКЛ ----------------

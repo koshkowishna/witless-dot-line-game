@@ -1,5 +1,6 @@
 import pygame
 
+
 def make_buttons(WIN_W):
     btn_w = 150
     btn_h = 55
