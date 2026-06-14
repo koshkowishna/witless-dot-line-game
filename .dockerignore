@@ -1,0 +1,10 @@
+.git
+.gitignore
+.dockerignore
+.pre-commit-config.yaml
+.venv
+env
+venv
+.idea
+.vscode
+README.md
