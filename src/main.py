@@ -401,13 +401,9 @@ def acceptable_end_for(color, cell):
     white_end = ends.get(COL_WHITE)
     color_end = ends.get(color)
 
-    # белая линия всегда только в белый конец
     if color == COL_WHITE:
         return cell == white_end
 
-    # цветная линия может:
-    # 1) закончить в своём конце
-    # 2) ИЛИ в белом (НО только если выполнены условия в
     return cell == color_end or cell == white_end
 
 
@@ -464,7 +460,7 @@ def validate_finish(start_cell, path):
     # ПРОВЕРКА КОНЕЧНОЙ КЛЕТКИ
     # -------------------------------------------------
 
-    # белая линия -> только белый конец
+    # белая линия - только белый конец
     if line_color == COL_WHITE:
 
         if last not in white_end_list:
@@ -472,7 +468,6 @@ def validate_finish(start_cell, path):
 
     # цветная линия
     else:
-
         # либо свой конец
         # либо белый
         if last not in color_end_list and last not in white_end_list:
@@ -542,8 +537,6 @@ def validate_finish(start_cell, path):
     if not all_color_dots_collected(line_color):
         return False
 
-    # -------------------------------------------------
-
     if invalid_line:
         return False
 
@@ -552,20 +545,12 @@ def validate_finish(start_cell, path):
 
 def validate_level():
 
-    # -------------------------------------------------
-    # ВСЕ СТАРТЫ ДОЛЖНЫ БЫТЬ ЗАВЕРШЕНЫ
-    # -------------------------------------------------
-
     for start_list in starts.values():
 
         for start_cell in start_list:
 
             if start_cell not in finished:
                 return False
-
-    # -------------------------------------------------
-    # ВСЕ ЛИНИИ ДОЛЖНЫ СУЩЕСТВОВАТЬ
-    # -------------------------------------------------
 
     for start_list in starts.values():
 
@@ -576,10 +561,6 @@ def validate_level():
 
             if len(paths[start_cell]) < 2:
                 return False
-
-    # -------------------------------------------------
-    # ВСЕ ЦВЕТНЫЕ ТОЧКИ СОБРАНЫ
-    # -------------------------------------------------
 
     for color, dot_list in dots.items():
 
@@ -599,10 +580,6 @@ def validate_level():
             if not collected:
                 return False
 
-    # -------------------------------------------------
-    # ВСЕ БЕЛЫЕ ТОЧКИ СОБРАНЫ
-    # -------------------------------------------------
-
     for dot in dots.get(COL_WHITE, []):
 
         collected = False
@@ -615,8 +592,6 @@ def validate_level():
 
         if not collected:
             return False
-
-    # -------------------------------------------------
 
     return True
 
@@ -796,7 +771,6 @@ while True:
                         drawing = True
                         invalid_line = False
 
-                        # ВАЖНО: берём именно клетку старта, а не список
                         paths[pressed_cell] = [pressed_cell]
                         active_start = pressed_cell
 
